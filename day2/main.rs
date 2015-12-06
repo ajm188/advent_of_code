@@ -6,22 +6,39 @@ fn str_to_int(s: String) -> i32 {
     i32::from_str_radix(&s, 10).ok().unwrap()
 }
 
-struct Rectangle {
+struct Present {
     length: i32,
     width: i32,
     height: i32,
 }
 
-impl Rectangle {
-    fn from_string_dims(dims: Vec<String>) -> Rectangle {
+impl Present {
+    fn from_string_dimensions(dimensions: String) -> Present {
+        let mut dims = Vec::with_capacity(3);
+        let mut s = "".to_string();
+        for c in dimensions.chars() {
+            if c == 'x' {
+                dims.push(s.clone());
+                s.clear();
+            } else {
+                s.push(c);
+            }
+        }
+        dims.push(s);
         let height = str_to_int(dims[2].clone());
         let width = str_to_int(dims[1].clone());
         let length = str_to_int(dims[0].clone());
-        Rectangle {
+        Present {
             length: length,
             width: width,
             height: height,
         }
+    }
+
+    fn required_wrapping_paper(&self) -> i32 {
+        // I really like that I get to call a builtin "unwrap" method inside a
+        // Present here.
+        self.surface_area() + self.side_surface_areas().iter().min().unwrap()
     }
 
     fn surface_area(&self) -> i32 {
@@ -35,25 +52,8 @@ impl Rectangle {
     }
 }
 
-fn required_wrapping_paper(dimensions: String) -> i32 {
-    let mut dims = Vec::with_capacity(3);
-    let mut s = "".to_string();
-    for c in dimensions.chars() {
-        if c == 'x' {
-            dims.push(s.clone());
-            s.clear();
-        } else {
-            s.push(c);
-        }
-    }
-    if !s.is_empty() {
-        dims.push(s.clone());
-    }
-    let rect = Rectangle::from_string_dims(dims);
-    rect.surface_area() + rect.side_surface_areas().iter().min().unwrap()
-}
-
 fn main() {
-    let amount: i32 = args().skip(1).map(required_wrapping_paper).sum();
+    let presents: Vec<Present> = args().skip(1).map(Present::from_string_dimensions).collect();
+    let amount: i32 = presents.iter().map(|p| p.required_wrapping_paper()).sum();
     println!("{}", amount);
 }
