@@ -25,10 +25,10 @@ fn main() {
         None    => "".to_string(),
     };
     let starting_point = Point{x: 0, y: 0};
-    let mut points = vec![starting_point];
-    for tuple in instructions.chars().zip(0..(instructions.len())) {
+    let mut points = vec![starting_point, Point{x: 0, y:0}];
+    for tuple in instructions.chars().zip(1..(instructions.len() + 1)) {
         let (instr, i) = match tuple { (a@_, b@_) => (a, b) };
-        let next_point = points[i].update(instr);
+        let next_point = points[i - 1].update(instr);
         points.push(next_point);
     }
 
