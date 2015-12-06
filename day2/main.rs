@@ -41,8 +41,22 @@ impl Present {
         self.surface_area() + self.side_surface_areas().iter().min().unwrap()
     }
 
+    fn required_ribbon_length(&self) -> i32 {
+        self.perimeters().iter().min().unwrap() + self.volume()
+    }
+
     fn surface_area(&self) -> i32 {
         self.side_surface_areas().iter().map(|s| s * 2).sum()
+    }
+
+    fn perimeters(&self) -> Vec<i32> {
+        vec![2 * (self.length + self.width),
+             2 * (self.length + self.height),
+             2 * (self.width + self.height)]
+    }
+
+    fn volume(&self) -> i32 {
+        self.length * self.width * self.height
     }
 
     fn side_surface_areas(&self) -> Vec<i32> {
@@ -54,6 +68,7 @@ impl Present {
 
 fn main() {
     let presents: Vec<Present> = args().skip(1).map(Present::from_string_dimensions).collect();
-    let amount: i32 = presents.iter().map(|p| p.required_wrapping_paper()).sum();
-    println!("{}", amount);
+    let wrapping_paper: i32 = presents.iter().map(|p| p.required_wrapping_paper()).sum();
+    let ribbon: i32 = presents.iter().map(|p| p.required_ribbon_length()).sum();
+    println!("{} {}", wrapping_paper, ribbon);
 }
