@@ -2,8 +2,14 @@ extern crate openssl;
 
 use openssl::crypto::hash::{hash, Type};
 
-fn hash_with_five_leading_zeros(input: String) -> bool {
-    five_leading_zeros(hash(Type::MD5, input.as_bytes()))
+fn correct_hash(input: String) -> bool {
+    let md5 = hash(Type::MD5, input.as_bytes());
+    //five_leading_zeros(md5)
+    six_leading_zeros(md5)
+}
+
+fn six_leading_zeros(md5: Vec<u8>) -> bool {
+    md5.iter().take(3).all(|x| x + 0 == 0)
 }
 
 fn five_leading_zeros(md5: Vec<u8>) -> bool {
@@ -14,6 +20,6 @@ fn five_leading_zeros(md5: Vec<u8>) -> bool {
 fn main() {
     let base = "bgvyzdsv";
     let num = (1..).find(|i|
-                         hash_with_five_leading_zeros(String::from(base) + &(i.to_string())));
+                         correct_hash(String::from(base) + &(i.to_string())));
     println!("{}", num.unwrap());
 }
