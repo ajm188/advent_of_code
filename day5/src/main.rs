@@ -1,3 +1,4 @@
+#![feature(str_char)]
 extern crate regex;
 
 use regex::Regex;
@@ -31,9 +32,35 @@ fn at_least_one_duplicate(s: &String) -> bool {
 }
 
 fn is_nice(s: &String) -> bool {
+    /*
     !has_bad_characters(s) &&
         at_least_three_vowels(s) &&
         at_least_one_duplicate(s)
+    */
+    sandwiched(s) && repeat_pair(s)
+}
+
+fn sandwiched(s: &String) -> bool {
+    // rust only supports RE2 regexes, so not backreffing on capture groups
+    // otherwise this can just be: (.+).\1
+    (1..(s.len() - 1)).any(|i| s.char_at(i - 1) == s.char_at(i + 1))
+}
+
+fn repeat_pair(s: &String) -> bool {
+    // posix regex: (.)(.).*\1\2
+    (0..(s.len() - 3)).any(
+        |i| {
+            let c1 = s.char_at(i);
+            let c2 = s.char_at(i + 1);
+            ((i + 2)..(s.len() - 1)).any(
+                |j| {
+                    let c3 = s.char_at(j);
+                    let c4 = s.char_at(j + 1);
+                    c1 == c3 && c2 == c4
+                }
+            )
+        }
+    )
 }
 
 fn main() {
