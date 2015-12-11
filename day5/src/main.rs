@@ -10,33 +10,21 @@ fn has_bad_characters(s: &String) -> bool {
 }
 
 fn at_least_three_vowels(s: &String) -> bool {
-    // regex wasn't working here for some reason, and it's a linear pass
-    // anyways
-    s.chars().filter(
-        |c| match *c {
-            'a' | 'e' | 'i' | 'o' | 'u' => true,
-            _                           => false,
-        }
-    ).count() >= 3
+    let vowel_re = Regex::new(r"(.*[aeiou].*){3}").unwrap();
+    vowel_re.is_match(s)
 }
 
 fn at_least_one_duplicate(s: &String) -> bool {
-    let mut iter = s.chars().peekable();
-    while iter.peek().is_some() {
-        let c = iter.next().unwrap();
-        if iter.peek().is_some() && c == *iter.peek().unwrap() {
-            return true
-        }
-    }
-    false
+    (0..(s.len() - 1)).any(|i| s.char_at(i) == s.char_at(i + 1))
 }
 
-fn is_nice(s: &String) -> bool {
-    /*
+fn is_nice_part_one(s: &String) -> bool {
     !has_bad_characters(s) &&
         at_least_three_vowels(s) &&
         at_least_one_duplicate(s)
-    */
+}
+
+fn is_nice_part_two(s: &String) -> bool {
     sandwiched(s) && repeat_pair(s)
 }
 
@@ -64,6 +52,7 @@ fn repeat_pair(s: &String) -> bool {
 }
 
 fn main() {
-    let num = args().skip(1).filter(is_nice).count();
-    println!("{}", num);
+    let num_part_one = args().skip(1).filter(is_nice_part_one).count();
+    let num_part_two = args().skip(1).filter(is_nice_part_two).count();
+    println!("{} {}", num_part_one, num_part_two);
 }
