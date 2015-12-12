@@ -22,24 +22,34 @@ where I: Iterator, F: Fn(&I::Item) -> bool {
     iterator.filter(f).count() as u32
 }
 
-struct HouseLights { matrix: Vec<Vec<bool>>, }
+struct HouseLights { matrix: Vec<Vec<u32>>, }
 struct Point<T> { x: T, y: T }
 
 impl HouseLights {
     fn init(dim: u32) -> HouseLights {
-        let mat: Vec<Vec<bool>> = 
-            (0..dim).map(|_| (0..dim).map(|_| false).collect()).collect();
+        let mat: Vec<Vec<u32>> = 
+            (0..dim).map(|_| (0..dim).map(|_| 0).collect()).collect();
         HouseLights { matrix: mat, }
     }
 
+    fn total_brightness(&self) -> u32 {
+        // sadly, rust can't seem to infer that adding a bunch of nested u32's
+        // will result in a u32
+        // self.matrix.iter().map(|row| row.iter().sum()).sum()
+        let row_sums: Vec<u32> = self.matrix.iter().map(|row| row.iter().sum()).collect();
+        row_sums.iter().sum()
+    }
+
+    /*
     fn count_lights(&self, state: bool) -> u32 {
         self.matrix.iter()
             .map(|row| count_where(row.iter(), |l| state == **l))
             .sum()
     }
+    */
 
     fn switch<F>(&self, p1: Point<usize>, p2: Point<usize>,
-                 func: F) -> HouseLights where F: Fn(bool) -> bool {
+                 func: F) -> HouseLights where F: Fn(u32) -> u32 {
         let dim = self.matrix.len();
         let x_range = p1.x..(p2.x + 1);
         let y_range = p1.y..(p2.y + 1);
@@ -86,10 +96,11 @@ fn main() {
     let lines = stdin.lock().lines().map(|line| line.unwrap());
     let h_n = lines.map(unpack)
         .fold(h_1, |h, t| match t.2.as_str() {
-            "turn on" => h.switch(t.0, t.1, |_| true),
-            "turn off" => h.switch(t.0, t.1, |_| false),
-            "toggle" => h.switch(t.0, t.1, |s: bool| -> bool { !s }),
+            "turn on" => h.switch(t.0, t.1, |b: u32| -> u32 { b + 1 }),
+            "turn off" => h.switch(t.0, t.1, |b: u32| -> u32 { if b < 1 { 0 } else { b - 1 } }),
+            "toggle" => h.switch(t.0, t.1, |b: u32| -> u32 { b + 2 }),
             _ => panic!("could not parse input line"),
         });
-    println!("{}", h_n.count_lights(true));
+    //println!("{}", h_n.count_lights(true));
+    println!("{}", h_n.total_brightness());
 }
