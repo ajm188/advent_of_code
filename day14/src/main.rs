@@ -6,42 +6,67 @@ extern crate regex;
 use regex::Regex;
 
 struct Reindeer {
-    name: String,
-    speed: u32, // in km / s
+    speed: u32,
     cont_travel: u32,
     rest_time: u32,
+    distance: u32,
+    rem_travel: u32,
+    rem_rest: u32,
+    score: u32
 }
 
 impl Reindeer {
-    fn new(name: String, speed: u32, cont_travel: u32,
+    fn new(speed: u32, cont_travel: u32,
            rest_time: u32) -> Reindeer {
         Reindeer {
-            name: name,
             speed: speed,
             cont_travel: cont_travel,
             rest_time: rest_time,
+            distance: 0,
+            rem_travel: cont_travel,
+            rem_rest: rest_time,
+            score: 0,
         }
     }
 
-    fn fly(&self, seconds: u32) -> u32 {
-        let mut dist = 0;
-        let mut elapsed_time = 0;
-        while elapsed_time < seconds {
-            let time_left = seconds - elapsed_time;
-            if self.cont_travel < time_left {
-                dist += self.speed * self.cont_travel;
-            } else {
-                dist += self.speed * time_left;
-                break;
-            }
-
-            if self.rest_time < (time_left - self.cont_travel) {
-                elapsed_time += self.cont_travel + self.rest_time;
-            } else {
-                break;
-            }
+    fn fly(&self) -> Reindeer {
+        if self.rem_travel > 0 {
+            self.dup_with(self.distance + self.speed,
+                          self.rem_travel - 1,
+                          self.rem_rest,
+                          self.score)
+        } else if self.rem_rest > 0 {
+            self.dup_with(self.distance,
+                          self.rem_travel,
+                          self.rem_rest - 1,
+                          self.score)
+        } else {
+            self.dup_with(self.distance + self.speed,
+                          self.cont_travel - 1,
+                          self.rest_time,
+                          self.score)
         }
-        dist
+    }
+
+    fn dup_with(&self, distance: u32, rem_travel: u32,
+                rem_rest: u32, score: u32) -> Reindeer {
+        Reindeer {
+            speed: self.speed,
+            cont_travel: self.cont_travel,
+            rest_time: self.rest_time,
+            distance: distance,
+            rem_travel: rem_travel,
+            rem_rest: rem_rest,
+            score: score,
+        }
+    }
+
+    fn award(&self, dist: u32) -> Reindeer {
+        let score_adj = if self.distance == dist { 1 } else { 0 };
+        self.dup_with(self.distance,
+                      self.rem_travel,
+                      self.rem_rest,
+                      self.score + score_adj)
     }
 }
 
@@ -54,12 +79,11 @@ fn parse_line(line: &String) -> Reindeer {
         None      => panic!("could not parse input"),
     };
 
-    let name = caps.at(1).unwrap();
     let speed = u32::from_str_radix(caps.at(2).unwrap(), 10).unwrap();
     let cont_travel = u32::from_str_radix(caps.at(3).unwrap(), 10).unwrap();
     let rest_time = u32::from_str_radix(caps.at(4).unwrap(), 10).unwrap();
 
-    Reindeer::new(name.to_string(), speed, cont_travel, rest_time)
+    Reindeer::new(speed, cont_travel, rest_time)
 }
 
 fn main() {
@@ -69,8 +93,15 @@ fn main() {
     let stdin = io::stdin();
     let lines = stdin.lock().lines();
 
-    let reindeers = lines.map(|line| parse_line(&line.unwrap()));
-    let distances = reindeers.map(|rd| rd.fly(flight_time));
-    let max_dist = distances.max();
+    let mut reindeers: Vec<Reindeer> = lines.map(|line| parse_line(&line.unwrap())).collect();
+    for _ in 0..flight_time {
+        reindeers = reindeers.iter().map(|rd| rd.fly()).collect();
+        let max_dist = reindeers.iter().map(|rd| rd.distance).max().unwrap();
+        reindeers = reindeers.iter().map(|rd| rd.award(max_dist)).collect();
+    }
+    let max_dist = reindeers.iter().map(|rd| rd.distance).max();
+    let max_score = reindeers.iter().map(|rd| rd.score).max();
+
     println!("{}", max_dist.unwrap());
+    println!("{}", max_score.unwrap());
 }
