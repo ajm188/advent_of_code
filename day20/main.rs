@@ -1,7 +1,7 @@
 #![feature(iter_arith)]
 fn presents_received(house: u32) -> u32 {
-    let factors = (1..house + 1).filter(|i| house % i == 0);
-    factors.map(|i| i * 10).sum()
+    let factors = (1..house + 1).filter(|i| house % i == 0 && house / i <= 50);
+    factors.map(|i| i * 11).sum()
 }
 
 fn main() {
