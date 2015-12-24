@@ -157,7 +157,7 @@ fn main() {
         .lines()
         .map(|l| parse_input(&l.unwrap()))
         .collect();
-    let mut program = Program { pc: 0, registers: (0, 0), };
+    let mut program = Program { pc: 0, registers: (1, 0), };
     loop {
         println!(
             "pc: {}, registers: ({}, {})",
