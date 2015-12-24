@@ -4,6 +4,25 @@ use std::io::prelude::*;
 
 struct House { lights: Vec<Vec<bool>>, }
 impl House {
+    fn corners_on(&self) -> House {
+        let lights = (0..self.lights.len()).map(|i| {
+            (0..self.lights.len()).map(|j| {
+                if self.is_corner(i, j) {
+                    true
+                } else {
+                    let light = *self.lights.get(i).unwrap().get(j).unwrap();
+                    light
+                }
+            }).collect()
+        }).collect();
+        House { lights: lights, }
+    }
+
+    fn is_corner(&self, x: usize, y: usize) -> bool {
+        (x == 0 || x == self.lights.len() - 1) &&
+            (y == 0 || y == self.lights.len() - 1)
+    }
+
     fn step(&self) -> House {
         let lights = (0..self.lights.len()).map(|i| {
             (0..self.lights.len()).map(|j| {
@@ -75,6 +94,6 @@ fn main() {
         .map(|line| parse(&line.unwrap()))
         .collect();
     let house = House { lights: lights, };
-    let last = (0..100).fold(house, |h, _| h.step());
+    let last = (0..100).fold(house.corners_on(), |h, _| h.step().corners_on());
     println!("{}", last.lights_on());
 }
