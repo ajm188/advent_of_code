@@ -99,7 +99,7 @@ fn main() {
             if !children { return false; }
             // filter out wrong # of cats
             let cats = match sue.cats {
-                Some(cats) => cats == my_sue.cats.unwrap(),
+                Some(cats) => cats > my_sue.cats.unwrap(),
                 None       => true,
             };
             if !cats { return false; }
@@ -111,7 +111,7 @@ fn main() {
             if !samoyeds { return false; }
             // filter out wrong # of pomeranians
             let pomeranians = match sue.pomeranians {
-                Some(pomeranians) => pomeranians == my_sue.pomeranians.unwrap(),
+                Some(pomeranians) => pomeranians < my_sue.pomeranians.unwrap(),
                 None       => true,
             };
             if !pomeranians { return false; }
@@ -129,13 +129,13 @@ fn main() {
             if !vizslas { return false; }
             // filter out wrong # of goldfish
             let goldfish = match sue.goldfish {
-                Some(goldfish) => goldfish == my_sue.goldfish.unwrap(),
+                Some(goldfish) => goldfish < my_sue.goldfish.unwrap(),
                 None       => true,
             };
             if !goldfish { return false; }
             // filter out wrong # of trees
             let trees = match sue.trees {
-                Some(trees) => trees == my_sue.trees.unwrap(),
+                Some(trees) => trees > my_sue.trees.unwrap(),
                 None       => true,
             };
             if !trees { return false; }
