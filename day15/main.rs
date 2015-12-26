@@ -94,12 +94,16 @@ fn main() {
         for pb in (0..101) {
             for frosting in (0..101) {
                 for sugar in (0..101) {
-                    if sprinkles + pb + frosting + sugar == 100 {
-                        let this_score = score(sprinkles, pb, frosting, sugar);
-                        if bs.is_none() || bs.unwrap() < this_score {
-                            bs = Some(this_score);
-                            best = (sprinkles, pb, frosting, sugar);
-                        }
+                    if sprinkles + pb + frosting + sugar != 100 {
+                        continue;
+                    }
+                    if calories(sprinkles, pb, frosting, sugar) != 500 {
+                        continue;
+                    }
+                    let this_score = score(sprinkles, pb, frosting, sugar);
+                    if bs.is_none() || bs.unwrap() < this_score {
+                        bs = Some(this_score);
+                        best = (sprinkles, pb, frosting, sugar);
                     }
                 }
             }
