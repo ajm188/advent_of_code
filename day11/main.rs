@@ -56,4 +56,6 @@ fn main() {
     let mut pg = PasswordGenerator { password: password.clone(), };
     let next_pw = pg.find(|password| is_valid_password(password));
     println!("{}", next_pw.unwrap());
+    let next_next_pw = pg.find(|password| is_valid_password(password));
+    println!("{}", next_next_pw.unwrap());
 }
