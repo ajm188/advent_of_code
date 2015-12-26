@@ -6,12 +6,24 @@ use std::io::Read;
 extern crate rustc_serialize;
 use rustc_serialize::json::Json;
 
+fn is_red(tup: (&String, &Json)) -> bool {
+    match tup.1.clone() {
+        Json::String(s) => s == String::from("red"),
+        _               => false,
+    }
+}
+
 fn sum(data: &Json) -> i64 {
     match data.clone() {
         Json::I64(v)      => v,
         Json::U64(v)      => v as i64,
         Json::Array(list) => list.iter().map(|j| sum(j)).sum(),
-        Json::Object(obj) => obj.iter().map(|tup| sum(tup.1)).sum(),
+        Json::Object(obj) =>
+            if obj.iter().any(is_red) {
+                0
+            } else {
+                obj.iter().map(|tup| sum(tup.1)).sum()
+            },
         _                 => 0,
     }
 }
