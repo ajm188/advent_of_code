@@ -28,13 +28,21 @@ fn main() {
         .skip(1)
         .map(|arg| u32::from_str_radix(&arg, 10).unwrap())
         .collect();
-    let arrangements = 
+    let arrangements: Vec<Vec<u32>> = 
         powerset(containers)
         .iter()
         .filter(|v| {
             let total: u32 = v.iter().sum();
             total == eggnog
         })
+        .map(|v| v.clone())
+        .collect();
+    let smallest_arrangement_size =
+        arrangements.iter().map(|v| v.len()).min().unwrap_or(0);
+    let num_smallest_arrangements =
+        arrangements
+        .iter()
+        .filter(|v| v.len() == smallest_arrangement_size)
         .count();
-    println!("{}", arrangements);
+    println!("{}", num_smallest_arrangements);
 }
