@@ -16,10 +16,12 @@ move (x, y) South d = (x, y - d)
 move (x, y) East d = (x + d, y)
 move (x, y) West d = (x - d, y)
 
-step :: (Point, Direction) -> String -> (Point, Direction)
-step (p, d) (t:amt) = ((move p d' amtAsInt), d')
-    where d' = turn d t
-          amtAsInt = read amt :: Int
+step :: [(Point, Direction)] -> String -> [(Point, Direction)]
+step [] _ = [(origin, North)]
+step l@((p, d):history) (t:a) = p':l
+    where p' = (move p d' a', d')
+          d' = turn d t
+          a' = read a :: Int
 
 turn :: Direction -> Char -> Direction
 turn North 'L' = West
@@ -33,4 +35,5 @@ turn West 'R' = North
 
 main = do
     input <- getContents
-    print $ displacement origin $ fst $ foldl step (origin, North) (lines input)
+    let (endpoint:_) = foldl step [(origin, North)] (lines input) in
+        print $ displacement origin $ fst $ endpoint
