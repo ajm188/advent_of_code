@@ -35,7 +35,15 @@ turn East 'R' = South
 turn West 'L' = South
 turn West 'R' = North
 
+count :: Eq a => a -> [a] -> Int
+count _ [] = 0
+count e (x:xs)
+    | e == x = 1 + count e xs
+    | otherwise = count e xs
+
 main = do
     input <- getContents
-    let (endpoint:_) = foldl step [(origin, North)] (lines input) in
-        print $ displacement origin $ fst $ endpoint
+    let history@(endpoint:_) = foldl step [(origin, North)] (lines input)
+        pointsInOrder = reverse $ map fst history
+        repeatPoints = filter (\x -> (count x pointsInOrder) > 1) pointsInOrder in
+            print $ (displacement origin $ fst $ endpoint, displacement origin $ head repeatPoints)
