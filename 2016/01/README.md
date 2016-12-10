@@ -1,6 +1,5 @@
-# To Run
+# Day 1
 
 ```bash
-ghc Main.hs
-cat input.txt | ./cleanup.sh | ./Main
+make
 ```
