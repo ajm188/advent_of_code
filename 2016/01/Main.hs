@@ -10,16 +10,18 @@ displacement (x1, y1) (x2, y2) = xdiff + ydiff
     where xdiff = abs (x1 - x2)
           ydiff = abs (y1 - y2)
 
-move :: Point -> Direction -> Int -> Point
-move (x, y) North d = (x, y + d)
-move (x, y) South d = (x, y - d)
-move (x, y) East d = (x + d, y)
-move (x, y) West d = (x - d, y)
+move :: Point -> Direction -> Int -> [Point]
+move _ _ 0 = []
+move (x, y) dir dist = (move p' dir (dist - 1)) ++ [p']
+    where p' = case dir of North -> (x, y + 1)
+                           South -> (x, y - 1)
+                           East -> (x + 1, y)
+                           West -> (x - 1, y)
 
 step :: [(Point, Direction)] -> String -> [(Point, Direction)]
 step [] _ = [(origin, North)]
-step l@((p, d):history) (t:a) = p':l
-    where p' = (move p d' a', d')
+step l@((p, d):_) (t:a) = points ++ l
+    where points = map (\point -> (point, d')) $ move p d' a'
           d' = turn d t
           a' = read a :: Int
 
