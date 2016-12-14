@@ -35,12 +35,21 @@ isRealRoom :: (String, a, String) -> Bool
 isRealRoom (name, _, checksum) = checksum == top5Freq
     where top5Freq = take 5 $ map fst $ sortBy freqComparator $ countDupes name
 
+cipher :: String -> Int -> String
+cipher name 0 = name
+cipher name x = cipher (map nextChar name) (x - 1)
+    where nextChar 'z' = 'a'
+          nextChar x = succ x
+
 main = do
     input <- getContents
     print $
         sum $
         map roomId $
         filter isRealRoom $
-        map (asTrip . splitUp . words) $
-        lines input
+        map (asTrip . splitUp . words) $ lines input
+    print $
+        map (\(name, id', _) -> (cipher name id', id')) $
+        filter isRealRoom $
+        map (asTrip . splitUp . words) $ lines input
     where roomId (_, id', _) = id'
