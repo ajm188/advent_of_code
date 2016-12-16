@@ -4,4 +4,6 @@ module Dragon
 
 dragon :: String -> String
 dragon a = a ++ ('0' : b)
-    where b = map (\x -> if x == '0' then '1' else '0') $ reverse a
+    where b = (reverse . (map swap)) a
+          swap '0' = '1'
+          swap '1' = '0'
