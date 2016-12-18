@@ -21,8 +21,7 @@ room x rows
 main = do
     input <- getContents
     let startRow = map toTrap ((head . lines) input)
-    let numRows = ((read . head . tail . lines) input) :: Int
+    let numRows1 = ((read . head . tail . lines) input) :: Int
+    let numRows2 = ((read . head . tail . tail . lines) input) :: Int
     print $
-        sum $
-        map (length . (filter not)) $
-        room numRows [startRow]
+        map (\x -> (sum . (map (length . (filter not))) . (room x)) [startRow]) [numRows1, numRows2]
