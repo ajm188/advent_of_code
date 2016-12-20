@@ -27,3 +27,7 @@ main = do
         earliestTime $
         map newDisc $
         lines input
+    print $ -- part 2
+        earliestTime $
+        (map newDisc $
+        lines input) ++ [Disc 11 0]
