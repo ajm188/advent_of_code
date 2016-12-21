@@ -1,6 +1,7 @@
 module Operation
 ( Operation(..)
 , operate
+, undo
 ) where
 
 import Data.Ix
@@ -39,6 +40,14 @@ operate str (Move x y) = str''
     where chr = str !! x
           str' = (take x str) ++ (drop (x + 1) str)
           str'' = (take y str') ++ [chr] ++ (drop y str')
+
+undo :: String -> Operation -> String
+undo str (RotateLeft steps) = operate str (RotateRight steps)
+undo str (RotateRight steps) = operate str (RotateLeft steps)
+undo str (RotateAroundLetter x) = until done (\str' -> operate str' (RotateLeft 1)) str
+    where done str' = str == (operate str' (RotateAroundLetter x))
+undo str (Move x y) = operate str (Move y x)
+undo str op = operate str op -- covers SwapIndices, SwapLetters, Reverse
 
 instance Read Operation where
 
