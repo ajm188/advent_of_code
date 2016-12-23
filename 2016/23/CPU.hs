@@ -20,6 +20,7 @@ eval state@(prog, cpu@(pc, _))
 
 exec :: Instruction -> ([Instruction], CPU) -> ([Instruction], CPU)
 exec (Cpy r1 r2) state@(prog, cpu@(pc, rs@(a, b, c, d)))
+    | notElem r2 registerNames = state -- invalid! skipping
     | elem r1 registerNames = exec (Cpy (show $ lookupReg cpu r1) r2) state
     | otherwise = (prog, (pc + 1, rs'))
         where rs' = case r2 of "a" -> (lit, b, c, d)
@@ -38,6 +39,17 @@ exec (Jnz r1 r2) state@(prog, cpu@(pc, rs@(a, b, c, d)))
                      _ -> (prog, (pc + lit2, rs))
         where lit1 = read r1 :: Int
               lit2 = read r2 :: Int
+exec (Tgl r) state@(prog, cpu@(pc, rs@(a, b, c, d)))
+    | elem r registerNames = ((toggle (index (lookupReg cpu r)) prog), (pc + 1, rs))
+    | otherwise = ((toggle (index lit) prog), (pc + 1, rs))
+        where lit = read r :: Int
+              index offset = pc + offset
+              toggle i prog = if elem i [0..((length prog) - 1)] then (take i prog) ++ [toggle' (prog !! i)] ++ (drop (i + 1) prog) else prog
+              toggle' (Inc r) = Dec r
+              toggle' (Dec r) = Inc r
+              toggle' (Tgl r) = Inc r
+              toggle' (Jnz r1 r2) = Cpy r1 r2
+              toggle' (Cpy r1 r2) = Jnz r1 r2
 
 lookupReg :: CPU -> String -> Int
 lookupReg (_, (a, b, c, d)) r
