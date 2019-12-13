@@ -41,6 +41,17 @@ def compute_orbit_counts(satellites_to_bodies, bodies_to_satellites, roots):
     return orbit_counts
 
 
+def find_path_to_root(node, satellites_to_bodies):
+    next_node = node
+    path = []
+
+    while next_node in satellites_to_bodies:
+        path.append(next_node)
+        next_node = satellites_to_bodies[next_node]
+
+    return path[1:]
+
+
 def main():
     satellites_to_bodies, bodies_to_satellites = construct_orbital_maps()
     roots = set(bodies_to_satellites.keys()) - set(satellites_to_bodies.keys())
@@ -50,6 +61,12 @@ def main():
     )
 
     print(sum(orbit_counts.values()))
+
+    san_path = find_path_to_root('SAN', satellites_to_bodies)
+    you_path = find_path_to_root('YOU', satellites_to_bodies)
+
+    common = [(i, x) for i, x in enumerate(you_path) if x in san_path]
+    print(common[0][0] + san_path.index(common[0][1]))
 
 
 if __name__ == "__main__":
