@@ -38,6 +38,8 @@ def compute_orbit_counts(satellites_to_bodies, bodies_to_satellites, roots):
         # add any satellites this one has
         to_process += bodies_to_satellites[next_sat]
 
+    return orbit_counts
+
 
 def main():
     satellites_to_bodies, bodies_to_satellites = construct_orbital_maps()
