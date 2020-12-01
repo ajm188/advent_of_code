@@ -1,0 +1,22 @@
+# config file: https://golangci-lint.run/usage/configuration/#config-file
+# linters: https://golangci-lint.run/usage/linters/
+
+run:
+  skip-dirs-use-default: true
+
+linters:
+  presets:
+    - bugs
+    - complexity
+    - format
+    - performance
+    - style
+    - unused
+  disable:
+    - gomnd
+  fast: true
+
+issues:
+  exclude-rules: []
+
+linters-settings: {}

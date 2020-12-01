@@ -1,0 +1,16 @@
+{
+    "folders": [
+        {
+            "name": "advent_of_code",
+            "path": "..",
+        },
+    ],
+    "settings": {
+        "go.lintOnSave": "workspace",
+        "go.lintTool": "golangci-lint",
+        "go.lintFlags": [
+            "run",
+            "--fast",
+        ]
+    }
+}
