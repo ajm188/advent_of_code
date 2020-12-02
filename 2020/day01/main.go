@@ -4,22 +4,12 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"sort"
 	"strconv"
 
 	"github.com/ajm188/advent_of_code/pkg/cli"
 	"github.com/ajm188/advent_of_code/pkg/search"
 )
-
-func getInput(path string) ([]byte, error) {
-	if path == "" {
-		return ioutil.ReadAll(os.Stdin)
-	}
-
-	return ioutil.ReadFile(path)
-}
 
 func toIntSlice(data []byte) ([]int, error) {
 	lines := bytes.Split(data, []byte("\n"))
@@ -46,7 +36,7 @@ func main() {
 
 	flag.Parse()
 
-	data, err := getInput(*path)
+	data, err := cli.GetInput(*path)
 	cli.ExitOnError(err)
 
 	entries, err := toIntSlice(data)
