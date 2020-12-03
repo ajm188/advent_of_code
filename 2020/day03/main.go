@@ -38,9 +38,11 @@ func NewForest(data []byte) (Forest, error) {
 }
 
 type Position struct {
-	x     int
-	y     int
-	trees int
+	x      int
+	y      int
+	trees  int
+	deltaX int
+	deltaY int
 }
 
 func (p *Position) traverse(forest Forest) {
@@ -49,9 +51,9 @@ func (p *Position) traverse(forest Forest) {
 			p.trees++
 		}
 
-		row := forest[(p.y+1)%len(forest)]
-		p.x = (p.x + 3) % len(row)
-		p.y++
+		row := forest[(p.y+p.deltaY)%len(forest)]
+		p.x = (p.x + p.deltaX) % len(row)
+		p.y += p.deltaY
 	}
 }
 
@@ -66,7 +68,38 @@ func main() {
 	forest, err := NewForest(data)
 	cli.ExitOnError(err)
 
-	pos := &Position{}
-	pos.traverse(forest)
+	pos := &Position{
+		deltaX: 3,
+		deltaY: 1,
+	}
+
+	positions := []*Position{
+		{
+			deltaX: 1,
+			deltaY: 1,
+		},
+		pos,
+		{
+			deltaX: 5,
+			deltaY: 1,
+		},
+		{
+			deltaX: 7,
+			deltaY: 1,
+		},
+		{
+			deltaX: 1,
+			deltaY: 2,
+		},
+	}
+
+	product := 1
+
+	for _, position := range positions {
+		position.traverse(forest)
+		product *= position.trees
+	}
+
 	fmt.Println(pos.trees)
+	fmt.Println(product)
 }
