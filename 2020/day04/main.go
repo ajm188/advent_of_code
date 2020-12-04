@@ -19,12 +19,18 @@ func main() {
 	cli.ExitOnError(err)
 
 	set := 0
+	valid := 0
 
 	for _, passport := range passports {
 		if passport.IsSet() {
 			set++
+
+			if passport.IsValid() {
+				valid++
+			}
 		}
 	}
 
 	fmt.Println(set)
+	fmt.Println(valid)
 }
