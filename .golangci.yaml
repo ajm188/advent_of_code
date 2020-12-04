@@ -13,6 +13,7 @@ linters:
     - style
     - unused
   disable:
+    - goerr113
     - gomnd
   fast: true
 

@@ -20,6 +20,7 @@ func NewForest(data []byte) (Forest, error) {
 		}
 
 		row := make([]bool, len(line))
+
 		for j, char := range line {
 			switch char {
 			case '.':
@@ -27,7 +28,7 @@ func NewForest(data []byte) (Forest, error) {
 			case '#':
 				row[j] = true
 			default:
-				return nil, fmt.Errorf("unknown symbol %s at %d:%d", char, i, j)
+				return nil, fmt.Errorf("unknown symbol %s at %d:%d", []byte{char}, i, j)
 			}
 		}
 
