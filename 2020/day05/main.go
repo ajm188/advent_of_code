@@ -21,4 +21,16 @@ func main() {
 
 	sort.Sort(sort.Reverse(SeatsByID(seats)))
 	fmt.Println(seats[0].ID())
+
+	mySeatID := -1
+
+	for i := 0; i < len(seats)-1; i++ {
+		// higher IDs come first, which is why we subtract in this direction
+		if seats[i].ID()-seats[i+1].ID() == 2 {
+			mySeatID = seats[i].ID() - 1
+			break
+		}
+	}
+
+	fmt.Println(mySeatID)
 }
