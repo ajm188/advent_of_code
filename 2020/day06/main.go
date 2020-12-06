@@ -8,6 +8,8 @@ import (
 	"github.com/ajm188/advent_of_code/pkg/cli"
 )
 
+// Group represents a set of answers from a group. The zero-byte key is reserved
+// to track group size.
 type Group map[byte]int
 
 func (g Group) Add(b byte) {
@@ -21,6 +23,22 @@ func (g Group) Add(b byte) {
 
 func (g Group) Total() int {
 	return len(g)
+}
+
+func (g Group) UnanimousTotal() int {
+	total := 0
+
+	for k, v := range g {
+		if k == 0 {
+			continue
+		}
+
+		if v == g[0] {
+			total++
+		}
+	}
+
+	return total
 }
 
 func parse(data []byte) []Group {
@@ -42,6 +60,8 @@ func parse(data []byte) []Group {
 		for _, question := range line {
 			cur.Add(question)
 		}
+
+		cur.Add(0)
 	}
 
 	if len(cur) > 0 {
@@ -60,9 +80,13 @@ func main() {
 	cli.ExitOnError(err)
 
 	total := 0
+	unanimousTotal := 0
+
 	for _, group := range parse(data) {
 		total += group.Total()
+		unanimousTotal += group.UnanimousTotal()
 	}
 
 	fmt.Println(total)
+	fmt.Println(unanimousTotal)
 }
