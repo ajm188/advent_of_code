@@ -9,6 +9,32 @@ import (
 	"github.com/ajm188/advent_of_code/pkg/cli"
 )
 
+// offsetSumsWhere returns the count of offset sums in xs meeting the condition
+// function.
+//
+// offset sums for a slice are a partition of xs into two slices.
+// LHS: [sum(xs[0:n]), sum(xs[1:n+1]), ..., sum(xs[len(xs)-n-1:len(xs)-1])]
+// RHS: [sum(xs[1:n]), sum(xs[2:n+2]), ..., sum(xs[len(xs)-n:])]
+func offsetSumsWhere(xs []int, n int, f func(l, r int) bool) (count int) {
+	l := make([]int, len(xs)-n)
+	r := make([]int, len(xs)-n)
+
+	for i, j := 0, 1; i < len(xs)-n && j < len(xs); i, j = i+1, j+1 {
+		for k := 0; k < n; k++ {
+			l[i] += xs[i+k]
+			r[i] += xs[j+k]
+		}
+	}
+
+	for i := 0; i < len(l); i++ {
+		if f(l[i], r[i]) {
+			count++
+		}
+	}
+
+	return count
+}
+
 func main() {
 	path := flag.String("path", "input.txt", "")
 	flag.Parse()
@@ -17,7 +43,7 @@ func main() {
 	cli.ExitOnError(err)
 
 	lines := strings.Split(string(data), "\n")
-	depths := make([]int64, 0, len(lines)-1)
+	depths := make([]int, 0, len(lines)-1)
 
 	for i, line := range lines {
 		if line == "" {
@@ -29,26 +55,12 @@ func main() {
 			cli.ExitOnError(fmt.Errorf("input line %d: %w", i, err))
 		}
 
-		depths = append(depths, val)
+		depths = append(depths, int(val))
 	}
 
-	var numIncreases int
-	for i := 1; i < len(depths); i++ {
-		if depths[i] > depths[i-1] {
-			numIncreases++
-		}
+	for _, n := range []int{1, 3} {
+		fmt.Println(offsetSumsWhere(depths, n, func(l, r int) bool {
+			return l < r
+		}))
 	}
-
-	fmt.Printf("%d\n", numIncreases)
-
-	numIncreases = 0
-	for i := 0; i < len(depths)-3; i++ {
-		prevSum := depths[i] + depths[i+1] + depths[i+2]
-		sum := depths[i+1] + depths[i+2] + depths[i+3]
-		if sum > prevSum {
-			numIncreases++
-		}
-	}
-
-	fmt.Printf("%d\n", numIncreases)
 }
