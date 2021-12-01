@@ -37,6 +37,7 @@ func offsetSumsWhere(xs []int, n int, f func(l, r int) bool) (count int) {
 
 func main() {
 	path := flag.String("path", "input.txt", "")
+	offsetCSV := flag.String("offsets", "1,3", "csv of integer offsets to sum")
 	flag.Parse()
 
 	data, err := cli.GetInput(*path)
@@ -58,8 +59,18 @@ func main() {
 		depths = append(depths, int(val))
 	}
 
-	for _, n := range []int{1, 3} {
-		fmt.Println(offsetSumsWhere(depths, n, func(l, r int) bool {
+	var offsets []int
+	for _, offsetStr := range strings.Split(*offsetCSV, ",") {
+		offset, err := strconv.ParseInt(offsetStr, 10, 64)
+		if err != nil {
+			cli.ExitOnError(fmt.Errorf("could not parse offset csv (%s): %w", *offsetCSV, err))
+		}
+
+		offsets = append(offsets, int(offset))
+	}
+
+	for _, n := range offsets {
+		fmt.Printf("n=%d\t%d\n", n, offsetSumsWhere(depths, n, func(l, r int) bool {
 			return l < r
 		}))
 	}
