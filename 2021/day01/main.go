@@ -40,4 +40,15 @@ func main() {
 	}
 
 	fmt.Printf("%d\n", numIncreases)
+
+	numIncreases = 0
+	for i := 0; i < len(depths)-3; i++ {
+		prevSum := depths[i] + depths[i+1] + depths[i+2]
+		sum := depths[i+1] + depths[i+2] + depths[i+3]
+		if sum > prevSum {
+			numIncreases++
+		}
+	}
+
+	fmt.Printf("%d\n", numIncreases)
 }
