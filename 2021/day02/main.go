@@ -10,8 +10,9 @@ import (
 )
 
 type position struct{ x, y int64 }
+type aimedPosition struct{ x, y, aim int64 }
 
-type command func(p position) position
+type command func(p position, ap aimedPosition) (position, aimedPosition)
 
 func main() {
 	path := flag.String("path", "input.txt", "")
@@ -36,26 +37,30 @@ func main() {
 
 		switch parts[0] {
 		case "forward":
-			commands[i] = func(p position) position {
-				return position{p.x + units, p.y}
+			commands[i] = func(p position, ap aimedPosition) (position, aimedPosition) {
+				return position{p.x + units, p.y}, aimedPosition{ap.x + units, ap.y + (ap.aim * units), ap.aim}
 			}
 		case "down":
-			commands[i] = func(p position) position {
-				return position{p.x, p.y + units}
+			commands[i] = func(p position, ap aimedPosition) (position, aimedPosition) {
+				return position{p.x, p.y + units}, aimedPosition{ap.x, ap.y, ap.aim + units}
 			}
 		case "up":
-			commands[i] = func(p position) position {
-				return position{p.x, p.y - units}
+			commands[i] = func(p position, ap aimedPosition) (position, aimedPosition) {
+				return position{p.x, p.y - units}, aimedPosition{ap.x, ap.y, ap.aim - units}
 			}
 		default:
 			cli.ExitOnError(fmt.Errorf("invalid command (%s) for input %q (line:%d); must be (forward|down|up)", parts[0], line, i))
 		}
 	}
 
-	var p position
+	var (
+		p  position
+		ap aimedPosition
+	)
 	for _, command := range commands {
-		p = command(p)
+		p, ap = command(p, ap)
 	}
 
 	fmt.Println(p.x * p.y)
+	fmt.Println(ap.x * ap.y)
 }
