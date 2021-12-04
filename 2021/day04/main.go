@@ -9,16 +9,26 @@ import (
 	"github.com/ajm188/advent_of_code/pkg/cli"
 )
 
-func play(boards []*Board, numbers []int64) int64 {
+func play(boards []*Board, numbers []int64) (scores []int64) {
+	skip := map[int]struct{}{}
 	for _, num := range numbers {
-		for _, board := range boards {
+		if len(skip) == len(boards) {
+			break
+		}
+
+		for i, board := range boards {
+			if _, ok := skip[i]; ok {
+				continue
+			}
+
 			if _, bingo := board.Mark(num); bingo {
-				return board.SumUnmarked() * num
+				skip[i] = struct{}{}
+				scores = append(scores, board.SumUnmarked()*num)
 			}
 		}
 	}
 
-	return 0
+	return scores
 }
 
 func main() {
@@ -81,5 +91,6 @@ func main() {
 		i += len(grid)
 	}
 
-	fmt.Println(play(boards, numbers))
+	scores := play(boards, numbers)
+	fmt.Println(scores[0], scores[len(scores)-1])
 }
