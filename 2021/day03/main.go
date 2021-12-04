@@ -103,12 +103,10 @@ func main() {
 	for _, column := range columns {
 		if len(o2rows) > 1 {
 			if zeroes, ones := partitionBinary(column, o2rows); len(ones) >= len(zeroes) {
-				o2bits += "1"
 				for _, skip := range zeroes {
 					delete(o2rows, skip)
 				}
 			} else {
-				o2bits += "0"
 				for _, skip := range ones {
 					delete(o2rows, skip)
 				}
