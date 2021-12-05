@@ -31,9 +31,7 @@ func main() {
 		}
 
 		units, err := strconv.ParseInt(parts[1], 10, 64)
-		if err != nil {
-			cli.ExitOnError(fmt.Errorf("failed to parse units (%s) for input %q (line:%d): %w", parts[1], line, i, err))
-		}
+		cli.ExitOnErrorf(err, "failed to parse units for input %q (line:%d): %s", line, i, err)
 
 		switch parts[0] {
 		case "forward":

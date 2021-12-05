@@ -29,7 +29,7 @@ func main() {
 	}
 
 	errmsg := "bad input format: %q (line:%d) does not match format 'x1,y1 -> x2,y2'"
-	parseErrMsg := "failed to parse coordinate in %q (line:%d): %w"
+	parseErrMsg := "failed to parse coordinate in %q (line:%d): %s"
 
 	vents := make([]*vent, len(lines))
 	for i, line := range lines {
@@ -44,14 +44,10 @@ func main() {
 		}
 
 		x1, err := strconv.ParseInt(p1parts[0], 10, 64)
-		if err != nil {
-			cli.ExitOnError(fmt.Errorf(parseErrMsg, p1parts[0], i, err))
-		}
+		cli.ExitOnErrorf(err, parseErrMsg, p1parts[0], i, err)
 
 		y1, err := strconv.ParseInt(p1parts[1], 10, 64)
-		if err != nil {
-			cli.ExitOnError(fmt.Errorf(parseErrMsg, p1parts[1], i, err))
-		}
+		cli.ExitOnErrorf(err, parseErrMsg, p1parts[1], i, err)
 
 		p2parts := strings.Split(parts[1], ",")
 		if len(p2parts) != 2 {
@@ -59,14 +55,10 @@ func main() {
 		}
 
 		x2, err := strconv.ParseInt(p2parts[0], 10, 64)
-		if err != nil {
-			cli.ExitOnError(fmt.Errorf(parseErrMsg, p2parts[0], i, err))
-		}
+		cli.ExitOnErrorf(err, parseErrMsg, p2parts[0], i, err)
 
 		y2, err := strconv.ParseInt(p2parts[1], 10, 64)
-		if err != nil {
-			cli.ExitOnError(fmt.Errorf(parseErrMsg, p2parts[1], i, err))
-		}
+		cli.ExitOnErrorf(err, parseErrMsg, p2parts[1], i, err)
 
 		vents[i] = &vent{
 			P1: &coordinate{X: int(x1), Y: int(y1)},

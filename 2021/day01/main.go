@@ -52,9 +52,7 @@ func main() {
 		}
 
 		val, err := strconv.ParseInt(line, 10, 64)
-		if err != nil {
-			cli.ExitOnError(fmt.Errorf("input line %d: %w", i, err))
-		}
+		cli.ExitOnErrorf(err, "input line %d", i)
 
 		depths = append(depths, int(val))
 	}
@@ -62,9 +60,7 @@ func main() {
 	var offsets []int
 	for _, offsetStr := range strings.Split(*offsetCSV, ",") {
 		offset, err := strconv.ParseInt(offsetStr, 10, 64)
-		if err != nil {
-			cli.ExitOnError(fmt.Errorf("could not parse offset csv (%s): %w", *offsetCSV, err))
-		}
+		cli.ExitOnErrorf(err, "could not parse offset csv (%s): %s", *offsetCSV, err)
 
 		offsets = append(offsets, int(offset))
 	}
