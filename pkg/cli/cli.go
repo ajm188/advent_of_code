@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 )
@@ -22,10 +22,24 @@ func ExitOnErrorf(err error, msg string, args ...interface{}) {
 	}
 }
 
+// GetInput returns the contents of the file at path, or os.Stdin if path is the
+// empty string.
 func GetInput(path string) ([]byte, error) {
+	f, err := Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	return io.ReadAll(f)
+}
+
+// Open returns a ReadCloser handle to the file at path, or os.Stdin if path is
+// the empty string.
+func Open(path string) (io.ReadCloser, error) {
 	if path == "" {
-		return ioutil.ReadAll(os.Stdin)
+		return os.Stdin, nil
 	}
 
-	return ioutil.ReadFile(path)
+	return os.Open(path)
 }
