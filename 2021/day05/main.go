@@ -74,32 +74,66 @@ func main() {
 		}
 	}
 
+	hitmap2D := map[string]int{}
 	hitmap := map[string]int{}
 	for _, vent := range vents {
+		xrange := []int{vent.P1.X, vent.P2.X}
+		yrange := []int{vent.P1.Y, vent.P2.Y}
+		sort.Ints(xrange)
+		sort.Ints(yrange)
+
 		if vent.P1.Y == vent.P2.Y {
-			xrange := []int{vent.P1.X, vent.P2.X}
-			sort.Ints(xrange)
 			for x := xrange[0]; x <= xrange[1]; x++ {
 				p := &coordinate{
 					X: x,
 					Y: vent.P1.Y,
 				}
 
+				hitmap2D[p.String()]++
 				hitmap[p.String()]++
 			}
-		}
-
-		if vent.P1.X == vent.P2.X {
-			yrange := []int{vent.P1.Y, vent.P2.Y}
-			sort.Ints(yrange)
+		} else if vent.P1.X == vent.P2.X {
 			for y := yrange[0]; y <= yrange[1]; y++ {
 				p := &coordinate{
 					X: vent.P1.X,
 					Y: y,
 				}
 
+				hitmap2D[p.String()]++
 				hitmap[p.String()]++
 			}
+		} else {
+			var (
+				xstep, ystep func(int) int
+				xstop, ystop func(int) bool
+			)
+			if vent.P1.X < vent.P2.X {
+				xstep = func(x int) int { return x + 1 }
+				xstop = func(x int) bool { return x <= vent.P2.X }
+			} else {
+				xstep = func(x int) int { return x - 1 }
+				xstop = func(x int) bool { return x >= vent.P2.X }
+			}
+
+			if vent.P1.Y < vent.P2.Y {
+				ystep = func(y int) int { return y + 1 }
+				ystop = func(y int) bool { return y <= vent.P2.Y }
+			} else {
+				ystep = func(y int) int { return y - 1 }
+				ystop = func(y int) bool { return y >= vent.P2.Y }
+			}
+
+			for x, y := vent.P1.X, vent.P1.Y; xstop(x) && ystop(y); x, y = xstep(x), ystep(y) {
+				p := &coordinate{x, y}
+				hitmap[p.String()]++
+			}
+		}
+	}
+
+	var count2D int
+	for _, hits := range hitmap2D {
+		if hits > 1 {
+			count2D++
 		}
 	}
 
@@ -110,5 +144,6 @@ func main() {
 		}
 	}
 
+	fmt.Println(count2D)
 	fmt.Println(count)
 }
