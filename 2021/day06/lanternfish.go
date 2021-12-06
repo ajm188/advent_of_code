@@ -23,3 +23,5 @@ func (lf *Lanternfish) Step() *Lanternfish {
 	lf.counter--
 	return nil
 }
+
+func (lf *Lanternfish) String() string { return fmt.Sprintf("%d", lf.counter) }
