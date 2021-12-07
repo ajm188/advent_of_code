@@ -69,4 +69,38 @@ func main() {
 	}
 
 	fmt.Println(*best)
+
+	_range := func(a, b int) (xs []int) {
+		for i := a; i < b; i++ {
+			xs = append(xs, i)
+		}
+
+		return xs
+	}
+	sumn := func(n int) int {
+		return n * (n + 1) / 2
+	}
+
+	best = nil
+	for _, target := range _range(positions[0], positions[len(positions)-1]+1) {
+		var cost int
+		for _, crab := range positions {
+			if target == crab {
+				continue
+			}
+
+			unitCost := target - crab
+			if unitCost < 0 {
+				unitCost *= -1
+			}
+
+			cost += sumn(unitCost)
+		}
+
+		if best == nil || *best >= cost {
+			best = &cost
+		}
+	}
+
+	fmt.Println(*best)
 }
