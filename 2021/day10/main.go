@@ -8,12 +8,14 @@ import (
 	"github.com/ajm188/advent_of_code/pkg/cli"
 )
 
-var errorScores = map[rune]int{
-	')': 3,
-	']': 57,
-	'}': 1197,
-	'>': 25137,
-}
+var (
+	errorScores = map[rune]int{
+		')': 3,
+		']': 57,
+		'}': 1197,
+		'>': 25137,
+	}
+)
 
 type NavigationLine struct {
 	Line string
@@ -25,16 +27,16 @@ type NavigationLine struct {
 }
 
 func (nl *NavigationLine) Parse() {
-	stack := NewPairStack(map[rune]rune{
-		')': '(',
-		']': '[',
-		'}': '{',
-		'>': '<',
+	stack := NewPairStack([]string{
+		"()",
+		"[]",
+		"{}",
+		"<>",
 	})
 
 	var corrupted *rune
 	for _, r := range nl.Line {
-		if err := stack.Push(r); err != nil {
+		if _, _, err := stack.Push(r); err != nil {
 			corrupted = &r
 			break
 		}
@@ -72,15 +74,15 @@ func main() {
 	data, err := cli.GetInput(*path)
 	cli.ExitOnError(err)
 
-	var score int
+	var errorScore int
 	for _, line := range strings.Split(string(data), "\n") {
 		if line == "" {
 			continue
 		}
 
 		navline := &NavigationLine{Line: line}
-		score += navline.SyntaxErrorScore()
+		errorScore += navline.SyntaxErrorScore()
 	}
 
-	fmt.Println(score)
+	fmt.Println(errorScore)
 }
