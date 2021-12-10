@@ -71,3 +71,24 @@ func (s *PairStack) Peek() (rune, bool) {
 
 	return s.stack[0], true
 }
+
+func (s *PairStack) Complete() []rune {
+	s2 := &PairStack{
+		stack:        append([]rune{}, s.stack...),
+		pairs:        s.pairs,
+		reversePairs: s.reversePairs,
+	}
+
+	return s2.complete()
+}
+
+func (s *PairStack) complete() (completion []rune) {
+	for s.Len() != 0 {
+		top := s.stack[0]
+		closer := s.pairs[top]
+		s.Push(closer)
+		completion = append(completion, closer)
+	}
+
+	return completion
+}
