@@ -58,8 +58,12 @@ func main() {
 		cli.ExitOnError(fmt.Errorf("malformed input: did not receive 10x10 grid as input"))
 	}
 
-	var flashes int
-	for step := 1; step <= *steps; step++ {
+	var (
+		flashes   int
+		firstSync *int
+	)
+
+	doStep := func(step int) {
 		var (
 			stepFlashes  int
 			chainFlashes []*coordinate
@@ -103,6 +107,14 @@ func main() {
 			}
 		}
 
+		if firstSync == nil && stepFlashes == len(grid)*len(grid) {
+			s := step + 1
+			firstSync = &s
+			if *debug {
+				fmt.Printf("first synchronization after step %d", s)
+			}
+		}
+
 		for i := 0; i < len(grid); i++ {
 			for j := 0; j < len(grid); j++ {
 				if grid[i][j] > 9 {
@@ -111,6 +123,14 @@ func main() {
 			}
 		}
 	}
+	for step := 1; step <= *steps; step++ {
+		doStep(step)
+	}
 
 	fmt.Println(flashes)
+
+	for step := *steps; firstSync == nil; step++ {
+		doStep(step)
+	}
+	fmt.Println(*firstSync)
 }
