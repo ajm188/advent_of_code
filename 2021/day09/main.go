@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/ajm188/advent_of_code/pkg/cli"
+	"github.com/ajm188/advent_of_code/pkg/sets"
 )
 
 type Coordinate struct{ Row, Col int }
@@ -138,10 +139,8 @@ func main() {
 	var basinSizes []int
 	for _, center := range lowPoints {
 		var (
-			size int
-			seen = map[string]struct{}{
-				center.Coordinate.String(): {},
-			}
+			size    int
+			seen    = sets.NewStrings(center.Coordinate.String())
 			current = center
 			next    []*Point
 		)
@@ -152,12 +151,12 @@ func main() {
 			}
 
 			for _, coord := range current.NeighborCoordinates {
-				if _, ok := seen[coord.String()]; ok {
+				if seen.Has(coord.String()) {
 					continue
 				}
 
 				next = append(next, points[coord.Row][coord.Col])
-				seen[coord.String()] = struct{}{}
+				seen.Insert(coord.String())
 			}
 			size++
 
