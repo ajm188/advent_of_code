@@ -45,6 +45,8 @@ func (nl nodes) Less(i, j int) bool { return nl[i].name < nl[j].name }
 var (
 	Start = &node{name: "start"}
 	End   = &node{name: "end"}
+
+	debug = flag.Bool("debug", false, "")
 )
 
 type route struct {
@@ -60,10 +62,8 @@ func (r *route) Add(n *node) *route {
 		}
 	}
 
-	if strings.ToLower(n.name) == n.name {
-		if r.seen.Has(n.name) {
-			return nil
-		}
+	if strings.ToLower(n.name) == n.name && r.seen.Has(n.name) {
+		return nil
 	}
 
 	r2 := &route{
@@ -76,7 +76,6 @@ func (r *route) Add(n *node) *route {
 
 func main() {
 	path := flag.String("path", "input.txt", "")
-	debug := flag.Bool("debug", false, "")
 	flag.Parse()
 
 	data, err := cli.GetInput(*path)
