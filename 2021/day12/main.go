@@ -49,12 +49,17 @@ var (
 	debug = flag.Bool("debug", false, "")
 )
 
+type iroute interface {
+	Add(*node) iroute
+	Nodes() []*node
+}
+
 type route struct {
 	nodes []*node
 	seen  *sets.Strings
 }
 
-func (r *route) Add(n *node) *route {
+func (r *route) Add(n *node) iroute {
 	if r.seen == nil {
 		r.seen = sets.NewStrings()
 		for _, n := range r.nodes {
@@ -72,6 +77,69 @@ func (r *route) Add(n *node) *route {
 	}
 	r2.seen.Insert(n.name)
 	return r2
+}
+
+func (r *route) Nodes() []*node { return r.nodes }
+
+type twiceroute struct {
+	nodes     []*node
+	seen      *sets.Strings
+	revisited *node
+}
+
+func (r *twiceroute) Add(n *node) iroute {
+	if r.seen == nil {
+		r.seen = sets.NewStrings()
+		for _, n := range r.nodes {
+			r.seen.Insert(n.name)
+		}
+	}
+
+	revisited := r.revisited
+	if strings.ToLower(n.name) == n.name && r.seen.Has(n.name) {
+		if n == Start || revisited != nil {
+			return nil
+		}
+
+		revisited = n
+	}
+
+	r2 := &twiceroute{
+		nodes:     append([]*node{n}, r.nodes...),
+		seen:      r.seen.Copy(),
+		revisited: revisited,
+	}
+	r2.seen.Insert(n.name)
+	return r2
+}
+
+func (r *twiceroute) Nodes() []*node { return r.nodes }
+
+func findPaths(routes []iroute) int {
+	var count int
+	for len(routes) != 0 {
+		var newroutes []iroute
+		for _, r := range routes {
+			if *debug {
+				log.Printf("route: %v\n", nodes(r.Nodes()).Reverse().Join(" -> "))
+			}
+
+			if r.Nodes()[0] == End {
+				count++
+				continue
+			}
+
+			for _, next := range r.Nodes()[0].nodes {
+				if r2 := r.Add(next); r2 != nil {
+					newroutes = append(newroutes, r2)
+				}
+			}
+		}
+
+		routes = newroutes
+	}
+
+	return count
 }
 
 func main() {
@@ -119,33 +187,12 @@ func main() {
 		}
 	}
 
-	var (
-		routes = []*route{
-			{nodes: []*node{Start}},
-		}
-		done int
-	)
-	for len(routes) != 0 {
-		var newroutes []*route
-		for _, r := range routes {
-			if *debug {
-				log.Printf("route: %v\n", nodes(r.nodes).Reverse().Join(" -> "))
-			}
+	fmt.Println(findPaths([]iroute{
+		&route{nodes: []*node{Start}},
+	}))
 
-			if r.nodes[0] == End {
-				done++
-				continue
-			}
+	fmt.Println(findPaths([]iroute{
+		&twiceroute{nodes: []*node{Start}},
+	}))
 
-			for _, next := range r.nodes[0].nodes {
-				if r2 := r.Add(next); r2 != nil {
-					newroutes = append(newroutes, r2)
-				}
-			}
-		}
-
-		routes = newroutes
-	}
-
-	fmt.Println(done)
 }
