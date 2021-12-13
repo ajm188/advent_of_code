@@ -81,4 +81,11 @@ func main() {
 		fmt.Println(paper.String())
 		fmt.Println()
 	}
+
+	fmt.Println(paper.points.Len())
+	for _, fold := range folds[1:] {
+		paper = fold.Fold(paper)
+	}
+
+	fmt.Println(paper.String())
 }
