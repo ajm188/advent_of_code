@@ -25,6 +25,12 @@ func (set *Strings) Insert(elems ...string) {
 	}
 }
 
+func (set *Strings) Remove(elems ...string) {
+	for _, s := range elems {
+		delete((*set), s)
+	}
+}
+
 func (set *Strings) Has(k string) bool {
 	_, ok := (*set)[k]
 	return ok
