@@ -4,3 +4,8 @@ target/
 *.hi
 *.o
 *.bin
+
+
+# Added by cargo
+
+/target

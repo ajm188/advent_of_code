@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "lib",
+
+    "2022/day01",
+]
