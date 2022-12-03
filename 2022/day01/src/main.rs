@@ -1,4 +1,6 @@
+use std::collections::BinaryHeap;
 use std::{io::BufRead, env};
+use std::iter;
 
 use lib::io;
 
@@ -36,5 +38,8 @@ fn main() {
         }
     }
 
-    println!("{:?}", elves.iter().map(|e| e.calories()).max().unwrap());
+    let mut sorted_calories: BinaryHeap<_> = elves.iter().map(|elf| elf.calories()).collect();
+
+    println!("part 1: {:?}", sorted_calories.peek().unwrap());
+    println!("part 2: {:?}", iter::repeat(0).take(3).map(|_| sorted_calories.pop().unwrap()).sum::<i64>());
 }
