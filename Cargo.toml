@@ -3,6 +3,7 @@ members = [
     "lib",
 
     "2022/day01",
+    "2022/day02",
 ]
 
 exclude = [
