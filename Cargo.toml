@@ -6,6 +6,7 @@ members = [
     "2022/day02",
     "2022/day03",
     "2022/day04",
+    "2022/day05",
 ]
 
 exclude = [
