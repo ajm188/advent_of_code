@@ -28,6 +28,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "aoc_2022_06"
+version = "0.1.0"
+dependencies = [
+ "itertools",
+ "lib",
+]
+
+[[package]]
 name = "day01"
 version = "0.1.0"
 dependencies = [
