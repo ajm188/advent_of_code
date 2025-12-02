@@ -15,14 +15,17 @@ type Range struct {
 	End   int
 }
 
-var validIDCache = map[int]bool{}
+var (
+	validIDCache1 = map[int]bool{}
+	validIDCache2 = map[int]bool{}
+)
 
-func (r Range) InvalidIDs() (ids []int) {
+func (r Range) InvalidIDs1() (ids []int) {
 	for i := r.Start; i <= r.End; i++ {
-		isValid, ok := validIDCache[i]
+		isValid, ok := validIDCache1[i]
 		if !ok {
-			isValid = IsValid(i)
-			validIDCache[i] = isValid
+			isValid = IsValid1(i)
+			validIDCache1[i] = isValid
 		}
 
 		if !isValid {
@@ -33,11 +36,41 @@ func (r Range) InvalidIDs() (ids []int) {
 	return ids
 }
 
-func IsValid(id int) bool {
+func (r Range) InvalidIDs2() (ids []int) {
+	for i := r.Start; i <= r.End; i++ {
+		isValid, ok := validIDCache2[i]
+		if !ok {
+			isValid = IsValid2(i)
+			validIDCache2[i] = isValid
+		}
+
+		if !isValid {
+			ids = append(ids, i)
+		}
+	}
+
+	return ids
+}
+
+func IsValid1(id int) bool {
 	s := fmt.Sprintf("%d", id)
 
 	if s == strings.Repeat(s[:len(s)/2], 2) {
 		return false
+	}
+
+	return true
+}
+
+func IsValid2(id int) bool {
+	s := fmt.Sprintf("%d", id)
+
+	for i := 0; i < len(s)/2; i++ {
+		seq := s[0 : i+1]
+		n := len(s) / len(seq)
+		if strings.Repeat(seq, n) == s {
+			return false
+		}
 	}
 
 	return true
@@ -70,12 +103,21 @@ func main() {
 
 	ranges := parse(string(data))
 
-	var allInvalidIDs []int
+	var (
+		allInvalidIDsPart1 []int
+		allInvalidIDsPart2 []int
+	)
+
 	for _, r := range ranges {
-		ids := r.InvalidIDs()
-		allInvalidIDs = append(allInvalidIDs, ids...)
+		ids := r.InvalidIDs1()
+		allInvalidIDsPart1 = append(allInvalidIDsPart1, ids...)
+		fmt.Printf("Range %d-%d: %v\n", r.Start, r.End, ids)
+
+		ids = r.InvalidIDs2()
+		allInvalidIDsPart2 = append(allInvalidIDsPart2, ids...)
 		fmt.Printf("Range %d-%d: %v\n", r.Start, r.End, ids)
 	}
 
-	fmt.Printf("Part 1: %d\n", math.Sum(allInvalidIDs))
+	fmt.Printf("Part 1: %d\n", math.Sum(allInvalidIDsPart1))
+	fmt.Printf("Part 2: %d\n", math.Sum(allInvalidIDsPart2))
 }
