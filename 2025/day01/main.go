@@ -42,28 +42,38 @@ func ParseRotation(input string) (Rotation, error) {
 }
 
 func (r Rotation) Apply(d Dial) Dial {
+	dial := Dial{pos: d.pos, zeroCount: d.zeroCount, zeroesPassed: d.zeroesPassed + int(r.Amount/100)}
+
 	amount := r.Amount
 	if r.Direction == Left {
 		amount = -amount
 	}
 
-	pos := d.pos + amount
-	if pos < 0 {
-		pos = 100 + pos
+	dial.pos += amount % 100
+
+	if dial.pos == 0 {
+		dial.zeroesPassed++
+	} else if dial.pos >= 100 {
+		dial.zeroesPassed++
+		dial.pos -= 100
+	} else if dial.pos < 0 && d.pos != 0 {
+		dial.zeroesPassed++
+		dial.pos += 100
+	} else if dial.pos < 0 {
+		dial.pos += 100
 	}
 
-	pos = (pos % 100)
-
-	dial := Dial{pos: pos, zeroCount: d.zeroCount}
-	if pos == 0 {
+	if dial.pos == 0 {
 		dial.zeroCount++
 	}
+
 	return dial
 }
 
 type Dial struct {
-	pos       int64
-	zeroCount int
+	pos          int64
+	zeroCount    int
+	zeroesPassed int
 }
 
 func main() {
@@ -90,4 +100,5 @@ func main() {
 	}
 
 	fmt.Println(dial.zeroCount)
+	fmt.Println(dial.zeroesPassed)
 }
