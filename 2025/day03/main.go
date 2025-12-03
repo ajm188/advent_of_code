@@ -11,27 +11,38 @@ import (
 
 type BatteryBank []rune
 
-func (bb BatteryBank) MaxJoltage() int {
-	var (
-		d1    rune
-		d1idx int
-	)
-	for i, b := range bb[0 : len(bb)-1] {
-		if b > d1 {
-			d1 = b
-			d1idx = i
+func (bb BatteryBank) MaxJoltage(n int) int {
+	var f func(BatteryBank, int) []rune
+	f = func(bb BatteryBank, digits int) []rune {
+		if digits == 0 {
+			return []rune{}
 		}
+
+		var (
+			d   rune
+			idx int
+		)
+		for i, b := range bb[0 : len(bb)-digits+1] {
+			if b > d {
+				d = b
+				idx = i
+			}
+		}
+
+		return append([]rune{d}, f(bb[idx+1:], digits-1)...)
 	}
 
-	var d2 rune
-	for _, b := range bb[d1idx+1:] {
-		if b > d2 {
-			d2 = b
-		}
-	}
-
-	i, _ := strconv.Atoi(fmt.Sprintf("%c%c", d1, d2))
+	digits := f(bb, n)
+	i, _ := strconv.Atoi(fmt.Sprintf(strings.Repeat("%c", len(digits)), anySlice(digits)...))
 	return i
+}
+
+func anySlice[T any](slice []T) []any {
+	anys := make([]any, len(slice))
+	for i, v := range slice {
+		anys[i] = v
+	}
+	return anys
 }
 
 func main() {
@@ -50,9 +61,14 @@ func main() {
 		banks = append(banks, []rune(line))
 	}
 
-	var totalJoltage int
+	var (
+		totalJoltage   int
+		totalJoltage12 int
+	)
 	for _, bank := range banks {
-		totalJoltage += bank.MaxJoltage()
+		totalJoltage += bank.MaxJoltage(2)
+		totalJoltage12 += bank.MaxJoltage(12)
 	}
 	fmt.Println(totalJoltage)
+	fmt.Println(totalJoltage12)
 }
