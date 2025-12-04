@@ -69,27 +69,38 @@ func main() {
 
 	grid := ParseGrid(string(data))
 	neighborCounts := make([][]int, len(grid))
-	for i := range grid {
-		neighborCounts[i] = make([]int, len(grid[i]))
 
-		for j := range grid[i] {
-			if grid[i][j] {
-				neighborCounts[i][j] = grid.Neighbors(i, j)
+	rolls := len(grid) * len(grid)
+	rollsRemoved := 0
+	iterations := 0
+	for rolls > 0 {
+		rolls = 0
+		for i := range grid {
+			neighborCounts[i] = make([]int, len(grid[i]))
+
+			for j := range grid[i] {
+				if grid[i][j] {
+					neighborCounts[i][j] = grid.Neighbors(i, j)
+				}
 			}
 		}
-	}
 
-	// fmt.Println(grid.String())
-
-	rolls := 0
-	for i, counts := range neighborCounts {
-		for j, neighbors := range counts {
-			if grid[i][j] && neighbors < 4 {
-				rolls++
-				grid[i][j] = false
+		for i, counts := range neighborCounts {
+			for j, neighbors := range counts {
+				if grid[i][j] && neighbors < 4 {
+					rolls++
+					grid[i][j] = false
+				}
 			}
 		}
+
+		if iterations == 0 {
+			fmt.Println(rolls)
+		}
+
+		iterations++
+		rollsRemoved += rolls
 	}
 
-	fmt.Println(rolls)
+	fmt.Println(rollsRemoved)
 }
